@@ -64,4 +64,25 @@ class UserServiceApplicationTests {
         mockMvc.perform(get("/users/9999"))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void registeredUserCanLogInAndInvalidPasswordIsRejected() throws Exception {
+        String registration = "{\"name\":\"Mina\",\"email\":\"mina-login@example.com\",\"password\":\"secret\"}";
+        mockMvc.perform(post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(registration))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"mina-login@example.com\",\"password\":\"secret\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.password").doesNotExist());
+
+        mockMvc.perform(post("/users/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"email\":\"mina-login@example.com\",\"password\":\"wrong\"}"))
+                .andExpect(status().isUnauthorized());
+    }
 }

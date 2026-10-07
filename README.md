@@ -6,7 +6,7 @@ A college demonstration project made of three independent Spring Boot REST micro
 
 | Service | Port | API |
 | --- | ---: | --- |
-| user-service | 8081 | `/users` |
+| user-service | 8081 | `/users`, `/users/login` |
 | movie-service | 8082 | `/movies` |
 | booking-service | 8083 | `/bookings` |
 
@@ -24,8 +24,19 @@ movie-service/      Spring Boot application, tests, Dockerfile
 booking-service/    Spring Boot application, tests, Dockerfile
 karate/             Separate Karate API test project
 kubernetes/         Deployment and ClusterIP Service manifests
+frontend/           Plain HTML, CSS, and JavaScript demo UI
 Jenkinsfile          CI pipeline
 ```
+
+## Frontend demo
+
+Start all three services, then from the project root serve the static page with Python:
+
+```sh
+python -m http.server 5500 --directory frontend
+```
+
+Open `http://localhost:5500` in a browser. The UI loads movies, registers and signs in users, creates and cancels bookings, and looks up a booking by ID. Login checks credentials through `POST /users/login`; the user ID is kept in browser local storage. The controllers allow browser requests from this local demo origin. Movie cards show a fixed demo seat count; the existing services do not track seat inventory.
 
 ## Run services
 

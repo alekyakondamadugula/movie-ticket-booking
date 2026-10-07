@@ -6,6 +6,8 @@ import com.movieticket.user.exception.ResourceNotFoundException;
 import com.movieticket.user.model.User;
 import com.movieticket.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -36,6 +38,15 @@ public class UserService {
     public User getById(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id " + id));
+    }
+
+    public User login(String email, String password) {
+        User user = repository.findByEmail(email)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password"));
+        if (!user.getPassword().equals(password)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+        }
+        return user;
     }
 
     private boolean isBlank(String s) {

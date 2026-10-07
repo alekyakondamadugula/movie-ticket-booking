@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171314">
+  <title>MovieBook | Book Your Movie Tickets</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="posters.css">
+</head>
+<body>
+  <section id="auth-screen" class="auth-screen">
+    <div class="auth-screen-brand"><span aria-hidden="true">🎬</span> MovieBook</div>
+    <p class="auth-screen-eyebrow">YOUR MOVIE NIGHT STARTS HERE</p>
+    <h1>Welcome to MovieBook</h1>
+    <p class="auth-screen-copy">Login or Register to continue</p>
+    <article class="card auth-card" id="auth-card">
+      <div class="auth-tabs"><button class="auth-tab active" type="button" data-mode="login">Login</button><button class="auth-tab" type="button" data-mode="register">Register</button></div>
+      <form id="auth-form">
+        <div id="name-field" class="hidden"><label for="auth-name">Name</label><input id="auth-name" name="name" autocomplete="name" placeholder="Your name"></div>
+        <label for="auth-email">Email</label><input id="auth-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+        <label for="auth-password">Password</label><input id="auth-password" name="password" type="password" autocomplete="current-password" placeholder="Your password" required>
+        <button class="button button-primary full-width" id="auth-submit" type="submit">Login</button>
+      </form>
+      <p class="message" id="auth-message" aria-live="polite"></p>
+    </article>
+  </section>
+
+  <div id="app-shell" class="hidden">
+    <header class="site-header">
+      <a class="brand" href="#top"><span aria-hidden="true">🎬</span> MovieBook</a>
+      <nav><a href="#movies">Movies</a><a href="#booking">Book tickets</a><a href="#history" id="history-nav" class="hidden">My bookings</a><span id="session-area"></span></nav>
+    </header>
+    <main id="top">
+      <section class="hero">
+        <div class="hero-content"><p class="eyebrow">YOUR NEXT FAVORITE STORY STARTS HERE</p><h1>Book Your<br><span>Movie Tickets</span></h1><p class="hero-copy">Big stories, comfy seats, and a night worth remembering. Pick a movie and make it yours.</p><a class="button button-light" href="#movies">Explore movies <span>↓</span></a></div>
+        <div class="hero-poster" aria-hidden="true"><div class="poster-orbit"></div><span class="poster-star">✦</span><span class="poster-caption">TONIGHT<br>IS A<br>GOOD NIGHT<br>FOR A MOVIE</span><small>YOUR SEAT IS WAITING</small></div>
+        <div class="hero-glow" aria-hidden="true"></div>
+      </section>
+
+      <section class="section movies-section" id="movies">
+        <div class="section-head"><div><p class="eyebrow">FIND YOUR SHOW</p><h2>Now Showing</h2></div><button class="button button-outline" id="load-movies" type="button">↻ &nbsp;Refresh movies</button></div>
+        <div id="movie-list" class="movie-grid" aria-live="polite"><div class="empty-state">Your movies will load here.</div></div>
+      </section>
+
+      <section class="section auth-section" id="account">
+        <article class="welcome-card hidden" id="welcome-card" aria-live="polite">
+          <div class="welcome-icon">✦</div><div><h2 id="welcome-title">Welcome!</h2><p>You are signed in.</p></div>
+          <button class="button button-outline" id="logout-button" type="button">Logout</button>
+        </article>
+      </section>
+
+      <section class="section booking-section" id="booking">
+        <div class="section-head"><div><p class="eyebrow">ALL SET FOR MOVIE NIGHT?</p><h2>Book Your Ticket</h2></div></div>
+        <article class="card ticket-card">
+          <div id="login-required" class="login-required">Please login or register to book tickets.</div>
+          <form id="booking-form" class="locked">
+            <label for="booking-movie">Movie</label><select id="booking-movie" name="movieId" required disabled><option value="">Select a movie</option></select>
+            <div class="form-row"><div><label for="show-date">Show date</label><select id="show-date" name="showDate" required disabled><option value="">Select a date</option></select></div><div><label for="show-time">Show time</label><select id="show-time" name="showTime" required disabled><option value="">Select a time</option></select></div></div>
+            <section id="seat-picker" class="seat-picker" aria-live="polite"><p class="seat-picker-hint">Choose a movie, date and showtime to view seats.</p></section>
+            <div id="booking-summary" class="booking-summary hidden"></div>
+            <p id="signed-in-as" class="signed-in-as"></p>
+            <button class="button button-primary full-width" type="submit" disabled>Book ticket <span>→</span></button>
+          </form>
+          <p class="message" id="booking-message" aria-live="polite"></p>
+        </article>
+      </section>
+
+      <section class="section history-section hidden" id="history">
+        <div class="section-head"><div><p class="eyebrow">YOUR MOVIE PLANS</p><h2>My Booking History</h2></div><button class="button button-outline" id="refresh-history" type="button">↻ &nbsp;Refresh</button></div>
+        <div id="booking-history" class="history-list" aria-live="polite"></div>
+      </section>
+    </main>
+    <footer><a class="brand" href="#top"><span aria-hidden="true">🎬</span> MovieBook</a><span>Make tonight a movie night.</span></footer>
+  </div>
+  <script src="script.js?v=20261006-show-dates"></script>
+</body>
+</html>

@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.contains;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -29,7 +31,18 @@ class MovieServiceApplicationTests {
 
         mockMvc.perform(get("/movies"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].genre").value("Sci-Fi"));
+                .andExpect(jsonPath("$[?(@.title == 'Inception')].genre").value(contains("Sci-Fi")));
+    }
+
+    @Test
+    void sampleMoviesAreSeededWhenDatabaseStartsEmpty() throws Exception {
+        mockMvc.perform(get("/movies"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[?(@.title == 'Pushpa 2')]").isNotEmpty())
+                .andExpect(jsonPath("$[?(@.title == 'RRR')]").isNotEmpty())
+                .andExpect(jsonPath("$[?(@.title == 'Kalki 2898 AD')]").isNotEmpty())
+                .andExpect(jsonPath("$[?(@.title == 'Hi Nanna')]").isNotEmpty())
+                .andExpect(jsonPath("$[?(@.title == 'Devara')]").isNotEmpty());
     }
 
     @Test

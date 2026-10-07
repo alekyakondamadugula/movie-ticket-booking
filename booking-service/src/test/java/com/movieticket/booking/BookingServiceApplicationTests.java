@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.time.LocalDate;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -22,7 +23,8 @@ class BookingServiceApplicationTests {
 
     @Test
     void createFetchAndCancelBooking() throws Exception {
-        String json = "{\"userId\":42,\"movieId\":1,\"showTime\":\"2026-10-10T18:30\",\"seats\":3}";
+        String json = "{\"userId\":42,\"movieId\":1,\"showDate\":\"" + LocalDate.now()
+                + "\",\"showTime\":\"5:00 PM\",\"seatNumbers\":[\"A1\",\"A2\"]}";
 
         mockMvc.perform(post("/bookings").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isCreated())
@@ -30,7 +32,8 @@ class BookingServiceApplicationTests {
 
         mockMvc.perform(get("/bookings/user/42"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].seats").value(3));
+                .andExpect(jsonPath("$[0].seats").value(2))
+                .andExpect(jsonPath("$[0].seatNumbers[0]").value("A1"));
 
         mockMvc.perform(put("/bookings/1/cancel"))
                 .andExpect(status().isOk())
@@ -43,9 +46,43 @@ class BookingServiceApplicationTests {
     }
 
     @Test
+    void availabilityReturnsConfiguredDatesAndShowtimes() throws Exception {
+        LocalDate today = LocalDate.now();
+        mockMvc.perform(get("/bookings/availability"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.showDates[0]").value(today.toString()))
+                .andExpect(jsonPath("$.showDates[1]").value(today.plusDays(1).toString()))
+                .andExpect(jsonPath("$.showDates[2]").value(today.plusDays(2).toString()))
+                .andExpect(jsonPath("$.showTimes[0]").value("10:00 AM"))
+                .andExpect(jsonPath("$.showTimes[3]").value("8:30 PM"));
+    }
+
+    @Test
     void invalidBookingReturnsBadRequest() throws Exception {
-        String json = "{\"userId\":1,\"movieId\":1,\"showTime\":\"2026-10-10T18:30\",\"seats\":0}";
+        String json = "{\"userId\":1,\"movieId\":1,\"showDate\":\"" + LocalDate.now()
+                + "\",\"showTime\":\"5:00 PM\",\"seatNumbers\":[]}";
         mockMvc.perform(post("/bookings").contentType(MediaType.APPLICATION_JSON).content(json))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void seatsAreReservedPerShowAndReleasedOnCancellation() throws Exception {
+        String date = LocalDate.now().toString();
+        String json = "{\"userId\":42,\"movieId\":77,\"showDate\":\"" + date
+                + "\",\"showTime\":\"5:00 PM\",\"seatNumbers\":[\"A1\"]}";
+        String booking = mockMvc.perform(post("/bookings").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        Long id = new com.fasterxml.jackson.databind.ObjectMapper().readTree(booking).get("id").asLong();
+
+        mockMvc.perform(get("/bookings/availability").param("movieId", "77").param("showDate", date).param("showTime", "5:00 PM"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.bookedSeats[0]").value("A1"));
+        mockMvc.perform(post("/bookings").contentType(MediaType.APPLICATION_JSON).content(json))
+                .andExpect(status().isBadRequest());
+        mockMvc.perform(get("/bookings/availability").param("movieId", "77").param("showDate", date).param("showTime", "8:30 PM"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.bookedSeats").isEmpty());
+        mockMvc.perform(put("/bookings/" + id + "/cancel")).andExpect(status().isOk());
+        mockMvc.perform(get("/bookings/availability").param("movieId", "77").param("showDate", date).param("showTime", "5:00 PM"))
+                .andExpect(status().isOk()).andExpect(jsonPath("$.bookedSeats").isEmpty());
     }
 }

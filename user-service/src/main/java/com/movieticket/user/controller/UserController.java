@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = {"http://localhost:5500", "http://127.0.0.1:5500"})
 @RequestMapping("/users")
 public class UserController {
 
@@ -21,6 +22,11 @@ public class UserController {
     @ResponseStatus(HttpStatus.CREATED)
     public User register(@RequestBody User user) {
         return service.register(user);
+    }
+
+    @PostMapping("/login")
+    public User login(@RequestBody User credentials) {
+        return service.login(credentials.getEmail(), credentials.getPassword());
     }
 
     @GetMapping
