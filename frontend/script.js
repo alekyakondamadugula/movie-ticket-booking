@@ -1,7 +1,17 @@
-const API = {
+// API Configuration for environment-aware deployment
+// On localhost (port 5500): uses http://localhost:8081/8082/8083
+// On Render or other deployed environments: uses the actual service URLs
+
+const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+
+const API = isLocal ? {
   users: 'http://localhost:8081/users',
   movies: 'http://localhost:8082/movies',
   bookings: 'http://localhost:8083/bookings'
+} : {
+  users: 'https://movie-ticket-booking-2-fzm2.onrender.com/users',
+  movies: 'https://movie-ticket-booking-1-pf6t.onrender.com/movies',
+  bookings: 'https://booking-service.onrender.com/bookings'  // Update after booking service is deployed
 };
 
 const MOVIE_POSTERS = {
