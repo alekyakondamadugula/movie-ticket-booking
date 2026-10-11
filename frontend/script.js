@@ -11,7 +11,7 @@ const API = isLocal ? {
 } : {
   users: 'https://movie-ticket-booking-2-fzm2.onrender.com/users',
   movies: 'https://movie-ticket-booking-1-pf6t.onrender.com/movies',
-  bookings: 'https://booking-service.onrender.com/bookings'  // Update after booking service is deployed
+  bookings: 'https://cinebook-booking-service.onrender.com/bookings'
 };
 
 const MOVIE_POSTERS = {
