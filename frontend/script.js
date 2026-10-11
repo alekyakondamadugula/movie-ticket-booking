@@ -324,6 +324,7 @@ async function loadSeatConfiguration() {
   if (seatConfiguration) return seatConfiguration;
   if (seatConfigurationPromise) return seatConfigurationPromise;
   seatConfigurationPromise = apiRequest(`${API.bookings}/availability`).then(configuration => {
+    console.log('Seat configuration loaded:', configuration);
     if (!Array.isArray(configuration?.showDates) || !Array.isArray(configuration?.showTimes)) {
       throw new Error('Booking Service did not return showDates and showTimes.');
     }
@@ -336,6 +337,7 @@ async function loadSeatConfiguration() {
     dateSelect.disabled = !currentUser || !movieSelect.value;
     return configuration;
   }).catch(error => {
+    console.error('Failed to load seat configuration:', error);
     seatConfiguration = null;
     seatConfigurationPromise = null;
     seatPicker.innerHTML = `<p class="seat-picker-hint error">Could not load show dates: ${escapeHtml(error.message)}</p>`;
