@@ -14,9 +14,11 @@ pipeline {
                 dir('user-service') {
                     bat 'mvn clean package'
                 }
+
                 dir('movie-service') {
                     bat 'mvn clean package'
                 }
+
                 dir('booking-service') {
                     bat 'mvn clean package'
                 }
@@ -28,12 +30,23 @@ pipeline {
                 dir('user-service') {
                     bat 'docker build -t user-service:latest .'
                 }
+
                 dir('movie-service') {
                     bat 'docker build -t movie-service:latest .'
                 }
+
                 dir('booking-service') {
                     bat 'docker build -t booking-service:latest .'
                 }
+            }
+        }
+
+        stage('Check Kubernetes Access') {
+            steps {
+                bat 'whoami'
+                bat 'where kubectl'
+                bat 'kubectl config current-context'
+                bat 'kubectl get nodes'
             }
         }
 
